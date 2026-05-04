@@ -1,10 +1,11 @@
 {
   "name": "assignment_1",
   "version": "1.0.0",
-  "description": "",
+  "description": "Comp2537 Web development assignment 1",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,10 +14,23 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "connect-mongo": "^6.0.0",
+    "connect-mongodb-session": "^5.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "joi": "^18.1.2",
-    "mongodb": "^7.2.0"
+    "joi": "^18.2.1",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CelestiaWana/WebDevAssignment_1.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CelestiaWana/WebDevAssignment_1/issues"
+  },
+  "homepage": "https://github.com/CelestiaWana/WebDevAssignment_1#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
