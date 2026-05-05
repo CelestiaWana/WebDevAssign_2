@@ -4,23 +4,21 @@ Comp2537 Web development assignment 1
 
 Most of the request are done. (80% task)
 
-Problem: There are three main things is not working for the whole time.
+Problem: There are four main things is not working for the whole time.
 
-1.  connection between studio 3T and mongoDB is not working at all since I am oversea. I made connection between mongoDB with studio 3T, but when it run. It says the 
-This is the error message from studio 3T:
-Database error (MongoConfigurationException): Failed looking up SRV record for '_mongodb._tcp.wevdevpracticedb.pzq4s.mongodb.net'.
+1.  connection between studio 3T and mongoDB is not working at all since I am oversea. I made connection between mongoDB with studio 3T, but when it run. It says the
+    This is the error message from studio 3T:
+    Database error (MongoConfigurationException): Failed looking up SRV record for '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'.
 
 Stacktrace:
-|_/ Database error (MongoConfigurationException): Failed looking up SRV record for '_mongodb._tcp.wevdevpracticedb.pzq4s.mongodb.net'.
-|____/ com.mongodb.spi.dns.DnsWithResponseCodeException: DNS name not found [response code 3]
-|_______/ javax.naming.NameNotFoundException: DNS name not found [response code 3]; remaining name '_mongodb._tcp.wevdevpracticedb.pzq4s.mongodb.net'
-
+|\_/ Database error (MongoConfigurationException): Failed looking up SRV record for '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'.
+|\_**\_/ com.mongodb.spi.dns.DnsWithResponseCodeException: DNS name not found [response code 3]
+|**\_****/ javax.naming.NameNotFoundException: DNS name not found [response code 3]; remaining name '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'
 
 2.  my image are not showing. I tried many time to change or delete "/", change images. This take me very long time.
 
 This is the console:
 Failed to load resource: the server responded with a status of 404 (Not Found)
-
 
 3. 404 page is not working in my VSCode at the beginnig, now works. But I like to show what's the problem I met.
    =========This is my code ==============
@@ -51,3 +49,53 @@ at app.route (/Users/vivian90413/Documents/Documents - Vivian’s MacBook Pro/BC
 at app.<computed> [as get] (/Users/vivian90413/Documents/Documents - Vivian’s MacBook Pro/BCIT/Term_1/2537_webDev/7_Assignment/WebDevAssignment_1/node_modules/express/lib/application.js:478:22) {
 originalPath: '_'
 }
+
+4.deploy for many times and it is not working.
+
+error message:
+connection error: MongoServerError: bad auth : Authentication failed.
+at Connection.sendCommand (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:320:27)
+at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+at async Connection.command (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:347:26)
+at async executeScram (/opt/render/project/src/node_modules/mongodb/lib/cmap/auth/scram.js:78:22)
+at async ScramSHA256.auth (/opt/render/project/src/node_modules/mongodb/lib/cmap/auth/scram.js:38:16)
+at async performInitialHandshake (/opt/render/project/src/node_modules/mongodb/lib/cmap/connect.js:110:13)
+at async connect (/opt/render/project/src/node_modules/mongodb/lib/cmap/connect.js:28:9) {
+errorLabelSet: Set(2) { 'HandshakeError', 'ResetPool' },
+errorResponse: {
+ok: 0,
+errmsg: 'bad auth : Authentication failed.',
+code: 8000,
+codeName: 'AtlasError'
+},
+ok: 0,
+code: 8000,
+codeName: 'AtlasError',
+connectionGeneration: 0
+}
+node:internal/process/promises:394
+triggerUncaughtException(err, true /_ fromPromise _/);
+^
+MongoServerError: bad auth : Authentication failed.
+at Connection.sendCommand (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:320:27)
+at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+at async Connection.command (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:347:26)
+at async executeScram (/opt/render/project/src/node_modules/mongodb/lib/cmap/auth/scram.js:78:22)
+at async ScramSHA256.auth (/opt/render/project/src/node_modules/mongodb/lib/cmap/auth/scram.js:38:16)
+at async performInitialHandshake (/opt/render/project/src/node_modules/mongodb/lib/cmap/connect.js:110:13)
+at async connect (/opt/render/project/src/node_modules/mongodb/lib/cmap/connect.js:28:9) {
+errorLabelSet: Set(2) { 'HandshakeError', 'ResetPool' },
+errorResponse: {
+ok: 0,
+errmsg: 'bad auth : Authentication failed.',
+code: 8000,
+codeName: 'AtlasError'
+},
+ok: 0,
+code: 8000,
+codeName: 'AtlasError',
+connectionGeneration: 0
+}
+Node.js v24.14.1
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
