@@ -17,14 +17,12 @@ app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
 });
 
 // connect to MongoDB
-const MONGODB_USER = process.env.MONGODB_USER || "";
-const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD || "";
-const MONGODB_DATABASE = process.env.MONGODB_DATABASE || "WevDevPracticeDB";
-const NODE_SESSION_SECRET =
-  process.env.NODE_SESSION_SECRET || "41cfc315-441b-436a-94eb-2aa796aa0f59";
+const MONGODB_USER = process.env.MONGODB_USER;
+const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
+const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
+const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
-const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@wevdevpracticedb.pzq4s.mongodb.net/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
-
+const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@ac-amt7acl-shard-00-00.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-01.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-02.zcaoiij.mongodb.net:27017/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin&retryWrites=true&w=majority`;
 // connect MongoDB
 mongoose.connect(MONGODB_URI, {
   maxPoolSize: 10,
