@@ -17,13 +17,13 @@ app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
 });
 
 // connect to MongoDB
-const MONGODB_HOST = process.env.MONGODB_HOST;
-const MONGODB_USER = process.env.MONGODB_USER;
-const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
-const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
-const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
+const MONGODB_USER = process.env.MONGODB_USER || "";
+const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD || "";
+const MONGODB_DATABASE = process.env.MONGODB_DATABASE || "WevDevPracticeDB";
+const NODE_SESSION_SECRET =
+  process.env.NODE_SESSION_SECRET || "41cfc315-441b-436a-94eb-2aa796aa0f59";
 
-const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin`;
+const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@wevdevpracticedb.pzq4s.mongodb.net/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
 
 // connect MongoDB
 mongoose.connect(MONGODB_URI, {
