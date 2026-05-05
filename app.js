@@ -22,7 +22,7 @@ const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
 const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
 const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
-const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@ac-amt7acl-shard-00-00.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-01.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-02.zcaoiij.mongodb.net:27017/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin&retryWrites=true&w=majority`;
+const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@ac-amt7acl-shard-00-00.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-01.zcaoiij.mongodb.net:27017,ac-amt7acl-shard-00-02.zcaoiij.mongodb.net:27017/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin`;
 // connect MongoDB
 mongoose.connect(MONGODB_URI, {
   maxPoolSize: 10,
@@ -32,7 +32,7 @@ mongoose.connect(MONGODB_URI, {
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
+db.once("open", () => {
   console.log(" MongoDB connected successfully");
 });
 
@@ -50,6 +50,8 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
+
+store.on("error", (error) => console.log("SESSION STORE ERROR:", error));
 
 app.use(
   session({
