@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -8,26 +9,36 @@ const Joi = require("joi"); // define a bunch of rules to validate data
 // load environment variables from .env file
 require("dotenv").config();
 const app = express();
+app.use(cors());
 
-/* secret information section */
-const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
-const mongodb_password = process.env.MONGODB_PASSWORD;
-const mongodb_user_database =
-  process.env.MONGODB_USER_DATABASE || process.env.MONGODB_DATABASE;
-const mongodb_session_database =
-  process.env.MONGODB_SESSION_DATABASE || process.env.MONGODB_DATABASE;
-const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-const node_session_secret = process.env.NODE_SESSION_SECRET;
-/* END secret section */
+// problem on broswer 500
+app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
+  res.status(204).send("");
+});
 
 // connect to MongoDB
+const MONGODB_HOST = process.env.MONGODB_HOST;
+const MONGODB_USER = process.env.MONGODB_USER;
+const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
+const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
+const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
-mongoose.connect(
-  `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_user_database}`,
-);
+const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin`;
 
-const userCollection = mongoose.connection.collection("users");
+// connect MongoDB
+mongoose.connect(MONGODB_URI, {
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 60000,
+});
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function () {
+  console.log(" MongoDB connected successfully");
+});
+
+const userCollection = db.collection("users");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -38,13 +49,13 @@ const PORT = process.env.PORT || 3000;
 const expireTime = 1 * 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
 
 const store = new MongoDBStore({
-  uri: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_session_database}`,
+  uri: MONGODB_URI,
   collection: "sessions",
 });
 
 app.use(
   session({
-    secret: node_session_secret,
+    secret: NODE_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -57,7 +68,8 @@ app.use(
 app.get("/", (req, res) => {
   if (req.session.user) {
     res.send(`
-<h1>Hello, ${req.session.user.name}!</h1>            <br>
+            <h1>Hello, ${req.session.user.name}!</h1>            
+            <br>
             <a href="/members">Go to Members Area</a>
             <br>
             <a href="/logout">Logout</a>
@@ -65,11 +77,11 @@ app.get("/", (req, res) => {
   } else {
     res.send(`
              <a href="/signup">
-                <button >Sign up</button>
+            <button >Sign up</button>
             </a>
             <br><br>
             <a href="/login">
-                <button>Log in</button>
+            <button>Log in</button>
             </a>
         `);
   }
@@ -169,7 +181,7 @@ app.get("/members", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/");
   }
-  const images = ["/image_1.jpg", "/image_2.jpg", "/image_3.jpg"];
+  const images = ["image_1.jpg", "image_2.jpg", "image_3.jpg"];
   const randomImage = images[Math.floor(Math.random() * images.length)];
 
   res.send(`
