@@ -21,6 +21,7 @@ const MONGODB_HOST = process.env.MONGODB_HOST;
 const MONGODB_USER = process.env.MONGODB_USER;
 const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
 const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
+const MONGODB_SESSION_SECRET = process.env.MONGODB_SESSION_SECRET;
 const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
 const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
