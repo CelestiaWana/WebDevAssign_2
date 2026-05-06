@@ -25,18 +25,28 @@ const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
 const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
 
-// connect MongoDB
-mongoose.connect(MONGODB_URI, {
-  maxPoolSize: 10,
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 60000,
-})
-
-  .then(() => console.log("MongoDB connected successfully"))
-  .catch((err) => console.log("connection error:", err));
+// ==============================================
+// MongoDB
+// ==============================================
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => console.log("MongoDB connect successfully "))
+  .catch((err) => console.log("MongoDB failed to connect:", err));
 
 const db = mongoose.connection;
 const userCollection = db.collection("users");
+
+// ==============================================
+// Session save
+// ==============================================
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: "sessions",
+});
+
+store.on("error", (error) => {
+  console.log("Session error:", error);
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -46,14 +56,9 @@ const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
 const expireTime = 1 * 60 * 60 * 1000; //expires after 1 hour  (hours * minutes * seconds * millis)
 
-const store = new MongoDBStore({
-  uri: MONGODB_URI,
-  collection: "sessions",
-});
-
 app.use(
   session({
-    secret: NODE_SESSION_SECRET || "WevDevPracticeDB",
+    secret: NODE_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store,
