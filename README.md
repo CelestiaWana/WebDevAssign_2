@@ -2,6 +2,10 @@
 
 Comp2537 Web development assignment 1
 
+2026 May 5: 
+I still have the problem on image, but studio 3T and deploy works for now.
+===============================================================
+2026 May 4:
 Most of the request are done. (80% task)
 
 Problem: There are four main things is not working for the whole time.
