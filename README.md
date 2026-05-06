@@ -2,9 +2,13 @@
 
 Comp2537 Web development assignment 1
 
-2026 May 5: 
+2026 May 5:
+Most of the request are done. (95% task)
+
 I still have the problem on image, but studio 3T and deploy works for now.
-===============================================================
+
+---
+
 2026 May 4:
 Most of the request are done. (80% task)
 
@@ -17,7 +21,7 @@ Problem: There are four main things is not working for the whole time.
 Stacktrace:
 |\_/ Database error (MongoConfigurationException): Failed looking up SRV record for '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'.
 |\_**\_/ com.mongodb.spi.dns.DnsWithResponseCodeException: DNS name not found [response code 3]
-|**\_****/ javax.naming.NameNotFoundException: DNS name not found [response code 3]; remaining name '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'
+|**\_\*\*\*\*/ javax.naming.NameNotFoundException: DNS name not found [response code 3]; remaining name '\_mongodb.\_tcp.wevdevpracticedb.pzq4s.mongodb.net'
 
 2.  my image are not showing. I tried many time to change or delete "/", change images. This take me very long time.
 
@@ -25,14 +29,16 @@ This is the console:
 Failed to load resource: the server responded with a status of 404 (Not Found)
 
 3. 404 page is not working in my VSCode at the beginnig, now works. But I like to show what's the problem I met.
-   =========This is my code ==============
+   ----------This is my code ------------
    404 page – site: any non-assigned URLs method: GET
-   app.get("_", (req, res) => {
+   app.get("\_", (req, res) => {
    res.status(404);
    res.send("Page not found-404");
    });
-   =======================================
-   This is problem I received, but I try to change "_" to '_' and try to find any other _ in my code. But I can't find any. I think it is hidden.
+
+---
+
+This is problem I received, but I try to change "_" to '_' and try to find any other \_ in my code. But I can't find any. I think it is hidden.
 
 vivian90413@Vivians-MacBook-Pro WebDevAssignment_1 % node app.js
 ◇ injected env (6) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
@@ -58,7 +64,7 @@ originalPath: '_'
 
 error message:
 connection error: MongoServerError: bad auth : Authentication failed.
-at Connection.sendCommand (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:320:27)
+at Connection.sendCommand (/opt/render/project/src/node*modules/mongodb/lib/cmap/connection.js:320:27)
 at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
 at async Connection.command (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:347:26)
 at async executeScram (/opt/render/project/src/node_modules/mongodb/lib/cmap/auth/scram.js:78:22)
@@ -78,7 +84,7 @@ codeName: 'AtlasError',
 connectionGeneration: 0
 }
 node:internal/process/promises:394
-triggerUncaughtException(err, true /_ fromPromise _/);
+triggerUncaughtException(err, true /* fromPromise \_/);
 ^
 MongoServerError: bad auth : Authentication failed.
 at Connection.sendCommand (/opt/render/project/src/node_modules/mongodb/lib/cmap/connection.js:320:27)
