@@ -6,6 +6,9 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const Joi = require("joi"); // define a bunch of rules to validate data
 
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "4.4.4.4"]);
+
 // load environment variables from .env file
 require("dotenv").config();
 const app = express();
@@ -17,26 +20,36 @@ app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
 });
 
 // connect to MongoDB
-const MONGODB_HOST = process.env.MONGODB_HOST;
-const MONGODB_USER = process.env.MONGODB_USER;
-const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
-const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
-const MONGODB_SESSION_SECRET = process.env.MONGODB_SESSION_SECRET;
+const MONGODB_URI = process.env.MONGODB_URI;
 const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
-
-const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
+const MONGODB_SESSION_SECRET = process.env.MONGODB_SESSION_SECRET;
 
 // ==============================================
 // MongoDB
 // ==============================================
+let userCollection;
+
 mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log("MongoDB connect successfully "))
-  .catch((err) => console.log("MongoDB failed to connect:", err));
+  .connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    family: 4,
+  })
+  .then(() => {
+    console.log("MongoDB connect successfully ");
+    const db = mongoose.connection;
+    userCollection = db.collection("users");
+    console.log("userCollection is ready");
 
-const db = mongoose.connection;
-const userCollection = db.collection("users");
-
+    // Start server
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log("server is running on http://localhost:" + PORT);
+    });
+  })
+  .catch((err) => {
+    console.log("MongoDB failed to connect:", err);
+    process.exit(1);
+  });
 // ==============================================
 // Session save
 // ==============================================
@@ -217,9 +230,4 @@ app.get("/logout", (req, res) => {
 app.use((req, res) => {
   res.status(404);
   res.send("Page not found - 404");
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log("server is running at http://localhost:" + PORT);
 });
