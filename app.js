@@ -23,21 +23,19 @@ const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
 const MONGODB_DATABASE = process.env.MONGODB_DATABASE;
 const NODE_SESSION_SECRET = process.env.NODE_SESSION_SECRET;
 
-const MONGODB_URI = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?ssl=true&replicaSet=atlas-128fou-shard-0&authSource=admin`;
+const MONGODB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?retryWrites=true&w=majority`;
 
 // connect MongoDB
 mongoose.connect(MONGODB_URI, {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 30000,
   socketTimeoutMS: 60000,
-});
+})
+
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.log("connection error:", err));
 
 const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
-  console.log(" MongoDB connected successfully");
-});
-
 const userCollection = db.collection("users");
 
 app.use(express.urlencoded({ extended: true }));
@@ -46,7 +44,7 @@ app.use(express.json());
 
 const saltRounds = 12;
 const PORT = process.env.PORT || 3000;
-const expireTime = 1 * 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
+const expireTime = 1 * 60 * 60 * 1000; //expires after 1 hour  (hours * minutes * seconds * millis)
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -55,7 +53,7 @@ const store = new MongoDBStore({
 
 app.use(
   session({
-    secret: NODE_SESSION_SECRET,
+    secret: NODE_SESSION_SECRET || "WevDevPracticeDB",
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -120,13 +118,11 @@ app.get("/login", (req, res) => {
 app.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
   if (!name)
-    return res.redirect("Name is required. <a href='/signup'>Try again</a>");
+    return res.send("Name is required. <a href='/signup'>Try again</a>");
   if (!email)
-    return res.redirect("Email is required. <a href='/signup'>Try again</a>");
+    return res.send("Email is required. <a href='/signup'>Try again</a>");
   if (!password)
-    return res.redirect(
-      "Password is required. <a href='/signup'>Try again</a>",
-    );
+    return res.send("Password is required. <a href='/signup'>Try again</a>");
   // joi validation for NoSQL
   const schema = Joi.object({
     name: Joi.string().required(),
@@ -151,7 +147,7 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password)
-    return res.redirect(
+    return res.send(
       "Email and password are required. <a href='/signup'>Try again</a>",
     );
   // joi validation for NoSQL again
@@ -162,13 +158,13 @@ app.post("/login", async (req, res) => {
   //check user
   const user = await userCollection.findOne({ email });
   if (!user)
-    return res.redirect(
+    return res.send(
       "Invalid email or password. <a href='/login'>Try again</a>",
     );
   //check password
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch)
-    return res.redirect(
+    return res.send(
       "Invalid email or password. <a href='/login'>Try again</a>",
     );
   // save session and login
