@@ -221,11 +221,12 @@ app.post("/login", async (req, res) => {
         "Invalid email or password. <a href='/login'>Try again</a>",
       );
     // save session and login
-    req.session.user = { name: user.name, email: user.email || user }; // add user incase there is undefined email, so that it can be used in members area to display name
+    req.session.user = { name: user.name, email: user.email, role: user.role }; // add user incase there is undefined email, so that it can be used in members area to display name
+    
     res.redirect("/members");
   } catch (err) {
     console.error(err);
-    res.render("login", { error: "xxx" });
+    res.render("login", { error: "Login error" });
   }
 });
 
