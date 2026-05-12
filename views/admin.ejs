@@ -1,0 +1,34 @@
+<%- include('templates/header') %>
+
+<div class="container mt-5">
+  <h1>User:</h1>
+  <p>Welcome <%= user %> (Admin)</p>
+
+  <table class="table table-striped mt-4">
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Change Role</th>
+    </tr>
+    <% users.forEach(u => { %>
+      <tr>
+        <td><%= u.name %></td>
+        <td><%= u.email %></td>
+        <td><%= u.role || 'user' %></td>
+        <td>
+          <form method="POST" action="/admin/update-role" class="d-inline">
+            <input type="hidden" name="email" value="<%= u.email %>">
+            <select name="role" class="form-select form-select-sm d-inline w-auto">
+              <option value="user" <%= (u.role||'user')==='user'?'selected':'' %>>User</option>
+              <option value="admin" <%= (u.role||'user')==='admin'?'selected':'' %>>Admin</option>
+            </select>
+            <button class="btn btn-sm btn-primary ms-1">Save</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+</div>
+
+<%- include('templates/footer') %>

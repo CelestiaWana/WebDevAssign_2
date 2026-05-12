@@ -1,0 +1,25 @@
+<%- include('templates/header') %>
+
+<div class="container mt-5 w-50">
+  <h3>Sign Up</h3>
+  <form method="POST" action="/signup">
+    <input class="form-control my-2" name="name" placeholder="Name" required />
+    <input
+      class="form-control my-2"
+      name="email"
+      type="email"
+      placeholder="Email"
+      required
+    />
+    <input
+      class="form-control my-2"
+      name="password"
+      type="password"
+      placeholder="Password"
+      required
+    />
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+</div>
+
+<%- include('templates/footer') %>
