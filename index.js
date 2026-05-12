@@ -23,6 +23,7 @@ app.set("view engine", "ejs");
 const navLinks = [
   { name: "Home", url: "/" },
   { name: "Members", url: "/members" },
+  { name: "Admin", url: "/admin" },
   { name: "Image", url: "/image" },
   { name: "Login", url: "/login" },
   { name: "404", url: "/404" },
@@ -59,11 +60,13 @@ mongoose
     socketTimeoutMS: 45000,
     family: 4,
   })
-  .then(() => {
+  .then(async () => {
     console.log("MongoDB connect successfully ");
     const db = mongoose.connection;
     userCollection = db.collection("users");
     console.log("userCollection is ready");
+
+    await createRequiredUsers();
 
     // Start server
     app.listen(PORT, "0.0.0.0", () => {
@@ -112,16 +115,16 @@ function isAdmin(req) {
 function adminAuthorization(req, res, next) {
   if (!isAdmin(req)) {
     res.status(403);
-    return res.render("errorMessage", { error: "Not Authorized" });
+    return res.send("403 - Not Authorized");
   }
   next();
 }
 
 function sessionValidation(req, res, next) {
   if (!req.session.user) {
-    res.status(403);
-    res.render("errorMessage", { error: "Please login first." });
-    return;
+    return res.render("login", {
+      error: "Please log in first to access this page.",
+    });
   }
   next();
 }
@@ -165,18 +168,33 @@ app.post("/signup", async (req, res) => {
     const { error } = schema.validate(req.body);
     if (error)
       return res.send("Invalid input.<br><a href='/signup'>Try again</a>");
+    //testing if the email exist
+    const exist = await userCollection.findOne({ email });
+    if (exist)
+      return res.send(
+        "Email already exists.<br><a href='/signup'>Try again</a>",
+      );
 
     //important for password bcrypt hashing
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     //save to database
-    await userCollection.insertOne({ name, email, password: hashedPassword });
+    await userCollection.insertOne({
+      name,
+      email,
+      password: hashedPassword,
+      role: "user",
+    });
 
-    // dave session
-    req.session.user = { name, email };
+    // save session
+    req.session.user = {
+      name: name,
+      email: email,
+      role: "user",
+    };
     res.redirect("/members");
   } catch (err) {
     console.error(err);
-    res.redirect("/signup");
+    res.render("signup", { error: "Signup failed. Please try again." });
   }
 });
 
@@ -207,12 +225,12 @@ app.post("/login", async (req, res) => {
     res.redirect("/members");
   } catch (err) {
     console.error(err);
-    res.redirect("/login");
+    res.render("login", { error: "xxx" });
   }
 });
 
 //4. Members Area
-app.get("/members", (req, res) => {
+app.get("/members", sessionValidation, (req, res) => {
   if (!req.session.user) {
     return res.redirect("/");
   }
@@ -244,24 +262,76 @@ app.get("/logout", (req, res) => {
     `;
   res.redirect("/");
 });
-//new admit apage
-app.get("/admit", sessionValidation, adminAuthorization, async (req, res) => {
+//new admin apage
+app.get("/admin", sessionValidation, adminAuthorization, async (req, res) => {
   try {
-    const users = await userCollection
-      .find()
-      .project({ name: 1, email: 1 })
-      .toArray();
-    res.render("admit", { users });
+    const users = await userCollection.find().toArray();
+    res.render("admin", {
+      users: users,
+      user: req.session.user,
+    });
   } catch (err) {
     res.redirect("/");
   }
 });
 
-app.post("/admit-update-role", async (req, res) => {
-  res.render("admit-update-role");
-});
+app.post(
+  "/admin/update-role",
+  sessionValidation,
+  adminAuthorization,
+  async (req, res) => {
+    try {
+      const { email, role } = req.body;
+
+      await userCollection.updateOne(
+        { email: email }, // filter by email
+        { $set: { role: role } }, // update the role
+      );
+      res.redirect("/admin");
+    } catch (err) {
+      console.error(err);
+      res.redirect("/admin");
+    }
+  },
+);
 
 app.use((req, res) => {
   res.status(404);
   res.render("404", { navLinks: navLinks });
 });
+
+// ==============================================
+// creating default users for testing
+// ==============================================
+async function createRequiredUsers() {
+  if (!userCollection) return;
+
+  const bcrypt = require("bcrypt");
+  const saltRounds = 12;
+
+  // 1. create admin user
+  const adminExist = await userCollection.findOne({ email: "admin@email.com" });
+  if (!adminExist) {
+    const hashedPw = await bcrypt.hash("Password123!", saltRounds);
+    await userCollection.insertOne({
+      name: "Admin",
+      email: "admin@email.com",
+      password: hashedPw,
+      role: "admin",
+    });
+    console.log("Admin user has been created");
+  }
+
+  // 2. create normal user
+  const userExist = await userCollection.findOne({ email: "user@email.com" });
+  if (!userExist) {
+    const hashedPw = await bcrypt.hash("Password123!", saltRounds);
+    await userCollection.insertOne({
+      name: "User",
+      email: "user@email.com",
+      password: hashedPw,
+      role: "user",
+    });
+    console.log("Normal user has been created");
+  }
+}

@@ -7,7 +7,7 @@ Student Set: 1A
 [X]  The /admin page redirects to the /login page if not logged in.
 [X]  The /admin page shows an error message if logged in, but not an admin
 [X]  The /admin page shows a list of all users
-[]  The /admin page allows for promoting and demoting users to/from admin type
+[x]  The /admin page allows for promoting and demoting users to/from admin type
 [X]  All pages use a CSS Framework like Bootstrap (you must incorporate a header, footer, responsive grid, forms, buttons)
 
 [X]  The site uses EJS as a templating engine

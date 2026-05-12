@@ -2,8 +2,7 @@
 
 <div class="container mt-5">
   <h1>User:</h1>
-  <p>Welcome <%= user %> (Admin)</p>
-
+Welcome <%= user.name %> (<%= user.role %>)
   <table class="table table-striped mt-4">
     <tr>
       <th>Name</th>
@@ -17,6 +16,7 @@
         <td><%= u.email %></td>
         <td><%= u.role || 'user' %></td>
         <td>
+<% if (user.role === 'admin') { %>
           <form method="POST" action="/admin/update-role" class="d-inline">
             <input type="hidden" name="email" value="<%= u.email %>">
             <select name="role" class="form-select form-select-sm d-inline w-auto">
@@ -25,6 +25,7 @@
             </select>
             <button class="btn btn-sm btn-primary ms-1">Save</button>
           </form>
+        <% } %>
         </td>
       </tr>
     <% }) %>
